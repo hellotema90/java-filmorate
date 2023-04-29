@@ -20,7 +20,7 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private int generatorId = 0;
 
-    //счетчик для выдачи уникального id
+    //счетчик выдачи уникального id
     private int countGeneratorId() {
         return ++generatorId;
     }
