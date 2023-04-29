@@ -19,7 +19,7 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private int generatorId = 0;
 
-    //счетчик для выдачи уникального id
+    // счетчик для выдачи уникального id
     private int countGeneratorId() {
         return ++generatorId;
     }
