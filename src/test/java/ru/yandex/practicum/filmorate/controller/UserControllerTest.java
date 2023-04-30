@@ -11,8 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
     private User user1;
     private UserController userController;
+
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         userController = new UserController();
         user1 = new User(1, "email1@test.ru", "логин1", "имя1",
                 LocalDate.of(2000, 1, 1));
