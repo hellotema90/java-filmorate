@@ -27,7 +27,7 @@ public class Film {
     private String description;
     @NotNull(message = "дата релиза — не раньше 28 декабря 1895 года")
     private LocalDate releaseDate;
-    @NotNull(message = "продолжительность не может быть равно 0")
+    @NotNull(message = "продолжительность не может быть равна 0")
     @Positive(message = "продолжительность не может быть меньше 0")
     private long duration;
 
