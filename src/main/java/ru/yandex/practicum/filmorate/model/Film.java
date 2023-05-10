@@ -12,6 +12,8 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Slf4j
@@ -30,6 +32,7 @@ public class Film {
     @NotNull(message = "продолжительность не может быть равна 0")
     @Positive(message = "продолжительность не может быть меньше 0")
     private long duration;
+    private Map<Integer, User> likes = new HashMap<>();
 
     public int setId(int id) {
         this.id = id;
