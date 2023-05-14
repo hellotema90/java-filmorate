@@ -17,8 +17,6 @@ import java.util.*;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-
-
     private final FilmService filmService;
 
     @Autowired

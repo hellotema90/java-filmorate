@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,14 +15,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class UserService {
-    private final UserStorage userStorage;
-
     @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    UserStorage userStorage;
 
     public User addUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         userStorage.addUser(user);
         log.debug("Пользователь успешно добавлен.");
         return user;
@@ -65,17 +63,8 @@ public class UserService {
     public List<User> getListFriends(int id, int otherId) {
         Set<Integer> friends1 = userStorage.getUserByID(id).getFriends();
         Set<Integer> friends2 = userStorage.getUserByID(otherId).getFriends();
-        List<Integer> commonIdFriends = friends1.stream()
-                .filter(friends2::contains)
-                .collect(Collectors.toList());
-        List<User> commonFriends = new ArrayList<>();
-        for (int idFriends : commonIdFriends) {
-            commonFriends.add(userStorage.getUserByID(idFriends));
-        }
-        if (commonFriends.isEmpty()) {
-            log.debug("Общих друзей нет.");
-        }
-        return commonFriends;
+        return friends1.stream().filter(friends2::contains)
+                .map(userStorage::getUserByID).collect(Collectors.toList());
     }
 
     private void validateContainsId(int id) {

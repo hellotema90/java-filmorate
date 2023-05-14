@@ -7,22 +7,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
-    private int generatorId = 0;
+    private final AtomicInteger generatorId = new AtomicInteger(0);
 
-    // счетчик для выдачи уникального id
     private int countGeneratorId() {
-        return ++generatorId;
+        return generatorId.incrementAndGet();
     }
 
     @Override
     public void addUser(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
         user.setId(countGeneratorId());
         users.put(user.getId(), user);
     }
@@ -51,6 +48,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteFromFriends(int id, int idFriend) {
         users.get(id).getFriends().remove(idFriend);
-        users.get(idFriend).getFriends().remove(idFriend);
+        users.get(idFriend).getFriends().remove(id);
     }
 }
