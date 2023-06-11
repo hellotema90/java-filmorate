@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.yandex.practicum.filmorate.exception.ResourceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,12 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class UserService {
     @Autowired
+    @Qualifier("userDao")
     UserStorage userStorage;
 
     public User addUser(User user) {
@@ -40,35 +40,42 @@ public class UserService {
 
     public User getUserById(int id) {
         validateContainsId(id);
-        return userStorage.getUserByID(id);
+        return userStorage.getUserById(id);
     }
 
-    public void addFriend(int id, int friendId) {
+    public void addFriend(int idUser, int friendId) {
         validateContainsId(friendId);
-        userStorage.addToFriends(id, friendId);
+        userStorage.addToFriends(idUser, friendId);
         log.debug("Теперь вы в списке друзей.");
     }
 
-    public void deleteFriend(int id, int friendId) {
-        userStorage.deleteFromFriends(id, friendId);
+    public void deleteFriend(int idUSer, int friendId) {
+        userStorage.deleteFromFriends(idUSer, friendId);
         log.debug("Удален из списка друзей.");
     }
 
     public List<User> getFriendsById(int id) {
-        return userStorage.getUserByID(id).getFriends().stream()
-                .map(userStorage::getUserByID)
-                .collect(Collectors.toList());
+        return userStorage.getFriendsById(id);
     }
 
     public List<User> getListFriends(int id, int otherId) {
-        Set<Integer> friends1 = userStorage.getUserByID(id).getFriends();
-        Set<Integer> friends2 = userStorage.getUserByID(otherId).getFriends();
-        return friends1.stream().filter(friends2::contains)
-                .map(userStorage::getUserByID).collect(Collectors.toList());
+        return userStorage.getGeneralListFriends(id, otherId);
+    }
+
+    public void deleteUserById(int id) {
+        userStorage.deleteUserById(id);
+    }
+
+    public void deleteAllUsers() {
+        userStorage.deleteAllUsers();
+    }
+
+    public void addToFriends(int idUser, int idFriend) {
+        userStorage.addToFriends(idUser, idFriend);
     }
 
     private void validateContainsId(int id) {
-        if (userStorage.getUserByID(id) == null) {
+        if (userStorage.getUserById(id) == null) {
             throw new ResourceException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         }
     }

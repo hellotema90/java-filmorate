@@ -1,17 +1,17 @@
-
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +24,16 @@ class FilmControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        film1 = new Film(1, "фильм1", "описание1",
-                LocalDate.of(2010, 10, 10), 80L, new HashMap<>());
+        film1 = Film.builder()
+                .id(1)
+                .name("фильм1")
+                .description("описание1")
+                .releaseDate(LocalDate.of(2010, 10, 10))
+                .duration(80L)
+                .rate("1")
+                .mpa(Mpa.builder().id(1).name("G").build())
+                .genres(new TreeSet<>())
+                .build();
     }
 
     @Test
