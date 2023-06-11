@@ -228,9 +228,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void checkNameFilm(Film film) throws ValidationException {
-        LocalDate MOVIE_BIRTHDAY = LocalDate.parse("1895-12-28");
+        LocalDate movieBirthday = LocalDate.parse("1895-12-28");
         if (film.getName().isBlank() || film.getName().isEmpty()
-                || film.getReleaseDate().isBefore(MOVIE_BIRTHDAY)) {
+                || film.getReleaseDate().isBefore(movieBirthday)) {
             throw new ValidationException("Фильм не соответствует условиям. " +
                     "Проверьте данные и повторите запрос.");
         }
