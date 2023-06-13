@@ -21,6 +21,6 @@ public class GenreService {
     }
 
     public Genre getGenresFromFilmService(String igFilm) {
-        return genreDao.getGenresFromFilm(igFilm);
+        return genreDao.getGenresById(igFilm);
     }
 }

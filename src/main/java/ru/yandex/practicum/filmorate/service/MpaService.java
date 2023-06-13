@@ -22,6 +22,6 @@ public class MpaService {
     }
 
     public Mpa getMpaFromFilmService(String idFilm) {
-        return mpaDao.getMpaFromFilm(idFilm);
+        return mpaDao.getMpaById(idFilm);
     }
 }

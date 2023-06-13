@@ -8,5 +8,5 @@ public interface GenreDao {
 
     Set<Genre> getGenres();
 
-    Genre getGenresFromFilm(String idFilm);
+    Genre getGenresById(String idFilm);
 }

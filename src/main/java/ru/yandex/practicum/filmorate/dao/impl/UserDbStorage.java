@@ -36,6 +36,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where LOGIN=?", user.getLogin());
         if (userRows.next()) {
             user.setId(userRows.getInt("id"));
+            log.info("Пользователь {} добавлен", user);
         }
         return user;
     }
@@ -51,6 +52,7 @@ public class UserDbStorage implements UserStorage {
                 user.getEmail(),
                 user.getBirthday(),
                 user.getId());
+        log.info("Пользователь {} обновлен", user);
         return user;
     }
 
@@ -63,8 +65,8 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUserById(int id) {
         try {
-            String sqlQuery = "select * from USERS where ID= " + id;
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser);
+            String sqlQuery = "select * from USERS where ID = ?";
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         } catch (DataAccessException dataAccessException) {
             throw new ResourceException(HttpStatus.NOT_FOUND, "Пользователь с таким id " + id + " не найден.");
         }
@@ -89,20 +91,12 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteUserById(int id) {
         checkId(id);
-        String sqlDelFr = "DELETE FROM FRIENDSHIP WHERE USER_ID=? OR FRIEND_ID=?";
-        jdbcTemplate.update(sqlDelFr, id, id);
-        String sqlDropLike = "DELETE FROM LIKES WHERE USER_ID=?";
-        jdbcTemplate.update(sqlDropLike, id);
         String sqlDelUs = "DELETE from USERS where ID=?";
         jdbcTemplate.update(sqlDelUs, id);
     }
 
     @Override
     public void deleteAllUsers() {
-        String sqlDropFr = "DELETE FROM FRIENDSHIP";
-        jdbcTemplate.update(sqlDropFr);
-        String sqlDropLike = "DELETE FROM LIKES";
-        jdbcTemplate.update(sqlDropLike);
         String sqlDelUsers = "DELETE from USERS";
         jdbcTemplate.update(sqlDelUsers);
         log.info("Удалены все пользователи таблицы USERS");

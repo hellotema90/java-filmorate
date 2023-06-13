@@ -29,12 +29,9 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Genre getGenresFromFilm(String idGenre) {
-        String sql =
-                "SELECT *\n" +
-                        "FROM GENRE\n" +
-                        "WHERE ID=" + idGenre;
-        List<Genre> genres = jdbcTemplate.query(sql, this::mapRowToGenre);
+    public Genre getGenresById(String idGenre) {
+        String sql = "SELECT * FROM GENRE WHERE ID = ?";
+        List<Genre> genres = jdbcTemplate.query(sql, this::mapRowToGenre, idGenre);
 
         if (genres.isEmpty()) {
             log.info("жанр с идентификатором {} не найден.", idGenre);

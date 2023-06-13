@@ -27,13 +27,9 @@ public class MpaDaoImpl implements MpaDao {
     }
 
     @Override
-    public Mpa getMpaFromFilm(String idMpa) {
-        String sql =
-                "SELECT ID, NAME " +
-                        "FROM MPA " +
-                        "WHERE ID=" + idMpa;
-
-        List<Mpa> mpa = jdbcTemplate.query(sql, this::mapRowToMpa);
+    public Mpa getMpaById(String idMpa) {
+        String sql = "SELECT ID, NAME FROM MPA WHERE ID = ?";
+        List<Mpa> mpa = jdbcTemplate.query(sql, this::mapRowToMpa, idMpa);
         if (mpa.isEmpty()) {
             log.info("MPA с идентификатором {} не найден.", idMpa);
             throw new ResourceException(HttpStatus.NOT_FOUND, "Такого MPA нет в базе.");

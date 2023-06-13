@@ -46,14 +46,17 @@ public class FilmDbStorage implements FilmStorage {
         if (filmRows.next()) {
             film.setId(filmRows.getInt("id"));
         }
+        validFilm(film);
+        log.info("Фильм {} добавлен", film);
+    }
 
+    public void validFilm(Film film) {
         if (film.getMpa() != null) {
             String sqlForMpa = "INSERT INTO FILM_MPA (FILM_ID, MPA_ID) VALUES ((?), (?))";
             jdbcTemplate.update(sqlForMpa,
                     film.getId(),
                     film.getMpa().getId());
         }
-
         if (film.getGenres() != null) {
             String sqlForGenre = "INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) VALUES ((?), (?))";
             for (Genre genre : film.getGenres()) {
@@ -104,6 +107,7 @@ public class FilmDbStorage implements FilmStorage {
                 jdbcTemplate.update(sqlForMpa, film.getId());
             }
         }
+        log.info("Фильм {} обновлен", film);
         return film;
     }
 
@@ -116,8 +120,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(int id) {
         try {
-            String sqlQuery = "select * from FILM where ID= " + id;
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm);
+            String sqlQuery = "select * from FILM where ID = ?";
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
         } catch (DataAccessException dataAccessException) {
             throw new ResourceException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         }
@@ -127,6 +131,7 @@ public class FilmDbStorage implements FilmStorage {
     public void addLike(int idFilm, User user) {
         String sql = "INSERT INTO LIKES(USER_ID, FILM_ID) VALUES ((?), (?))";
         jdbcTemplate.update(sql, user.getId(), idFilm);
+        log.info("Пользователь {} поставил лайк фильму {}", user, idFilm);
     }
 
     @Override
@@ -134,6 +139,7 @@ public class FilmDbStorage implements FilmStorage {
         checkId(idFilm);
         String sql = "DELETE FROM LIKES WHERE USER_ID=? AND FILM_ID=?";
         jdbcTemplate.update(sql, user.getId(), idFilm);
+        log.info("Пользователь {} отменил лайк фильму {}", user, idFilm);
     }
 
     @Override
@@ -146,12 +152,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteAllFilms() {
-        String sqlDelLikes = "DELETE FROM LIKES";
-        jdbcTemplate.update(sqlDelLikes);
-        String sqlDelGenres = "DELETE FROM FILM_GENRE";
-        jdbcTemplate.update(sqlDelGenres);
-        String sqlDelMpa = "DELETE FROM FILM_MPA";
-        jdbcTemplate.update(sqlDelMpa);
         String sql = "DELETE from FILM";
         jdbcTemplate.update(sql);
         log.info("Удалены все фильмы таблицы FILM");
@@ -160,16 +160,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void deleteFilmById(Integer id) throws ValidationException {
         checkId(id);
-        String sqlDelLikesId = "DELETE FROM LIKES WHERE FILM_ID=?";
-        jdbcTemplate.update(sqlDelLikesId, id);
-        String sqlDelGenreId = "DELETE FROM FILM_GENRE WHERE FILM_ID=?";
-        jdbcTemplate.update(sqlDelGenreId, id);
-        String sqlDelMpaId = "DELETE FROM FILM_MPA WHERE FILM_ID=?";
-        jdbcTemplate.update(sqlDelMpaId, id);
         String sql = "DELETE from FILM where ID=?";
         jdbcTemplate.update(sql, id);
     }
-
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
@@ -190,7 +183,7 @@ public class FilmDbStorage implements FilmStorage {
                         + "FROM FILM F "
                         + "LEFT JOIN FILM_MPA FM on F.ID = FM.film_id "
                         + "LEFT JOIN MPA M2 on FM.mpa_id = M2.ID "
-                        + "WHERE F.ID =" + idFilm;
+                        + "WHERE F.ID = ?";
 
         RowMapper<Mpa> rowMapper = (rs, rowNum) ->
                 Mpa.builder()
@@ -198,7 +191,7 @@ public class FilmDbStorage implements FilmStorage {
                         .name(rs.getString(2))
                         .build();
 
-        List<Mpa> mpa = jdbcTemplate.query(sql, rowMapper);
+        List<Mpa> mpa = jdbcTemplate.query(sql, rowMapper, idFilm);
 
         if (mpa.isEmpty()) {
             throw new ResourceException(HttpStatus.OK, "у фильма пока нет MPA.");
