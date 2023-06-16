@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -11,16 +12,16 @@ import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exception.ResourceException;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
     @Autowired
+    @Qualifier("filmDao")
     FilmStorage filmStorage;
     @Autowired
+    @Qualifier("userDao")
     UserStorage userStorage;
 
     public Film addFilm(Film film) throws ValidationException {
@@ -51,21 +52,27 @@ public class FilmService {
     public void addLIke(int idFilm, int userId) {
         validateContainsId(idFilm);
         log.debug("Лайк успешно поставлен.");
-        filmStorage.addLike(idFilm, userStorage.getUserByID(userId));
+        filmStorage.addLike(idFilm, userStorage.getUserById(userId));
     }
 
     public void deleteLike(int idFilm, int userId) {
         validateContainsId(idFilm);
         validateContainsIdUser(userId);
         log.debug("Лайк успешно удален.");
-        filmStorage.deleteLike(idFilm, userStorage.getUserByID(userId));
+        filmStorage.deleteLike(idFilm, userStorage.getUserById(userId));
     }
 
     public List<Film> getTopsFilms(Integer count) {
-        return filmStorage.getAllFilms().stream()
-                .sorted(Comparator.<Film>comparingInt(film -> film.getLikes().size()).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getTopsFilms(count);
+    }
+
+    public void deleteFilmById(int id) {
+        validateContainsId(id);
+        filmStorage.deleteFilmById(id);
+    }
+
+    public void deleteAllFilm() {
+        filmStorage.deleteAllFilms();
     }
 
     private void validateContainsId(int id) {
@@ -75,7 +82,7 @@ public class FilmService {
     }
 
     private void validateContainsIdUser(int id) {
-        if (userStorage.getUserByID(id) == null) {
+        if (userStorage.getUserById(id) == null) {
             throw new ResourceException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         }
     }

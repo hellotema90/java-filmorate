@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.Email;
@@ -14,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 @Slf4j
 @EqualsAndHashCode
 @AllArgsConstructor

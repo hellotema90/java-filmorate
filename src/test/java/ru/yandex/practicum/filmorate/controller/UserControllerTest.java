@@ -9,7 +9,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,8 +21,12 @@ class UserControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        user1 = new User(1, "email1@test.ru", "логин1", "имя1",
-                LocalDate.of(2000, 1, 1), new HashSet<>());
+        user1 = User.builder()
+                .name("имя1")
+                .login("логин1")
+                .email("uemail1@test.ru")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
     }
 
     @Test

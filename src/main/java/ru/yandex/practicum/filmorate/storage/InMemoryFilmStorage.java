@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -27,8 +28,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         films.put(film.getId(), film);
+        return film;
     }
 
     @Override
@@ -50,4 +52,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void deleteLike(int idFilm, User user) {
         films.get(idFilm).getLikes().remove(user.getId());
     }
+
+    @Override
+    public List<Film> getTopsFilms(Integer count) {
+        return null;
+    }
+
+    @Override
+    public void deleteAllFilms() {
+
+    }
+
+    @Override
+    public void deleteFilmById(Integer id) throws ValidationException {
+
+    }
+
 }

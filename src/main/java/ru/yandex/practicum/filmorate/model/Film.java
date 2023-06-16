@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotBlank;
@@ -14,14 +11,15 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Slf4j
+@Builder
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-
     private int id;
     @NotBlank(message = "название не может быть пустым")
     private String name;
@@ -33,6 +31,9 @@ public class Film {
     @Positive(message = "продолжительность не может быть меньше 0")
     private long duration;
     private Map<Integer, User> likes = new HashMap<>();
+    private String rate;
+    private Mpa mpa;
+    private Set<Genre> genres;
 
     public int setId(int id) {
         this.id = id;
